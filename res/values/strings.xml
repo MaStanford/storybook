@@ -1,0 +1,16 @@
+<resources>
+
+    <string name="app_name">StoryBook</string>
+    <string name="menu_add_page">[+]</string>
+    <string name="menu_email">[@]</string>
+     <string name="menu_save">[^]</string>
+    <string name="toc_header">Table of Contents</string>
+    <string name="hint_toc">"Write the table of contents here. "</string>
+    <string name="hint_text_page">Write here.</string>
+    <string name="start_header">Welcome to My Story!</string>
+    <string name="new_project_btn">New Story</string>
+    <string name="load_project_btn">Load Story</string>
+    <string name="text_layout_error">An error occurred rendering this page.  Delete this page and try again ;)</string>
+    <string name="edit_text_cover">Write title and author here!</string>
+
+</resources>

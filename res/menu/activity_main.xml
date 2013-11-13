@@ -1,0 +1,17 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item 
+        android:id="@+id/menu_email" 
+        android:orderInCategory="1" 
+        android:title="@string/menu_email"
+        android:showAsAction="always"/>
+    <item 
+        android:id="@+id/menu_save" 
+        android:orderInCategory="2" 
+        android:title="@string/menu_save"
+        android:showAsAction="always"/>
+    <item 
+        android:id="@+id/menu_add_page" 
+        android:orderInCategory="3" 
+        android:title="@string/menu_add_page"
+        android:showAsAction="always"/>
+</menu>
