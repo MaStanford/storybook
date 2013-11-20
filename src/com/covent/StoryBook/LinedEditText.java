@@ -19,7 +19,6 @@ public class LinedEditText extends EditText {
     // This constructor is used by LayoutInflater
     public LinedEditText(Context context, AttributeSet attrs) {
         super(context, attrs);
-
         // Creates a Rect and a Paint object, and sets the style and color of the Paint object.
         mRect = new Rect();
         mPaint = new Paint();
@@ -30,13 +29,13 @@ public class LinedEditText extends EditText {
     
 
     @Override
-	protected void onTextChanged(CharSequence text, int start,
-			int lengthBefore, int lengthAfter) {
+	protected void onTextChanged(CharSequence text, int start,int lengthBefore, int lengthAfter) {
 		super.onTextChanged(text, start, lengthBefore, lengthAfter);
 		Constants.DEBUG_LOG(TAG, "onTextChanged");
+		
 		//Create the intent to send
 		Intent mIntent = new Intent(Constants.KEY_TEXT_CHANGE_INTENT);
-		mIntent.putExtra(Constants.KEY_TEXT_CHANGE_INTENT_EXTRA, text);
+		getContext().sendBroadcast(mIntent);
 	}
 
 
@@ -47,22 +46,17 @@ public class LinedEditText extends EditText {
      */
     @Override
     protected void onDraw(Canvas canvas) {
-
         // Gets the number of lines of text in the View.
         int count = getLineCount();
-
         // Gets the global Rect and Paint objects
         Rect r = mRect;
         Paint paint = mPaint;
-
         /*
          * Draws one line in the rectangle for every line of text in the EditText
          */
         for (int i = 0; i < count; i++) {
-
             // Gets the baseline coordinates for the current line of text
             int baseline = getLineBounds(i, r);
-
             /*
              * Draws a line in the background from the left of the rectangle to the right,
              * at a vertical position one dip below the baseline, using the "paint" object
@@ -70,7 +64,6 @@ public class LinedEditText extends EditText {
              */
             canvas.drawLine(r.left, baseline + 1, r.right, baseline + 1, paint);
         }
-
         // Finishes up by calling the parent method
         super.onDraw(canvas);
     }

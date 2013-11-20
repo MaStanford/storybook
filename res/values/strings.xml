@@ -1,9 +1,14 @@
 <resources>
 
     <string name="app_name">StoryBook</string>
-    <string name="menu_add_page">[+]</string>
+    <string name="menu_add_page">+</string>
+    <string name="menu_delete_page">-</string>
     <string name="menu_email">[@]</string>
-     <string name="menu_save">[^]</string>
+    <string name="menu_save">Save</string>
+    <string name="menu_save_as">Save As</string>
+    <string name="menu_load">Load</string>
+    <string name="menu_new_project">New Project</string>
+    <string name="menu_text_format">A</string>
     <string name="toc_header">Table of Contents</string>
     <string name="hint_toc">"Write the table of contents here. "</string>
     <string name="hint_text_page">Write here.</string>
@@ -12,5 +17,12 @@
     <string name="load_project_btn">Load Story</string>
     <string name="text_layout_error">An error occurred rendering this page.  Delete this page and try again ;)</string>
     <string name="edit_text_cover">Write title and author here!</string>
+    <string name="dialog_save_title">Save Name</string>
+    <string name="dialog_save_button">Accept</string>
+    <string name="dialog_cancel_button">Cancel</string>
+    <string name="dialog_start_button">Start</string>
+    <string name="dialog_back_button">Back</string>
+    <string name="dialog_project_title">Story Title</string>
+    <string name="dialog_load_title">Load Story</string>
 
 </resources>

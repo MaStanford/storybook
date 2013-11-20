@@ -1,5 +1,7 @@
 package com.covent.StoryBook;
 
+import java.io.File;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -32,7 +34,7 @@ public class PreferenceManager {
 	 */
 	public void set(boolean mIs){
 		SharedPreferences.Editor mEditor = mSharedPreferences.edit();
-		mEditor.putBoolean(Constants.KEY, mIs);
+		mEditor.putBoolean(Constants.SHARED_PREF_KEY, mIs);
 		mEditor.commit();
 	}
 	
@@ -41,7 +43,25 @@ public class PreferenceManager {
 	 * @return value
 	 */
 	public int getPreset(){
-		return mSharedPreferences.getInt(Constants.KEY, 0);
+		return mSharedPreferences.getInt(Constants.SHARED_PREF_KEY, 0);
+	}
+
+	public void setFileName(File filename) {
+		SharedPreferences.Editor mEditor = mSharedPreferences.edit();
+		mEditor.putString(Constants.KEY_SHARED_FILENAME, filename.getPath());
+		mEditor.commit();
+	}
+	
+	public void setFileName(String filename) {
+		SharedPreferences.Editor mEditor = mSharedPreferences.edit();
+		File mFile = FileSystemUtil.getSaveLoadFilePath(filename);
+		mEditor.putString(Constants.KEY_SHARED_FILENAME, mFile.getPath());
+		mEditor.commit();
+	}
+	
+	public File getFileName(){
+		File mFile = new File(mSharedPreferences.getString(Constants.KEY_SHARED_FILENAME, Constants.KEY_DEFAULT_FILENAME));
+		return mFile;
 	}
 
 }

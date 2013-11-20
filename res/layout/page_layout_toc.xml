@@ -11,15 +11,18 @@
         android:layout_height="wrap_content"
         android:text="@string/toc_header" />
 
-    <EditText
-        android:id="@+id/toc_text"
+    <view
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/tv_story_text"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="@string/hint_toc"
-        android:inputType="textMultiLine" >
-
-        <requestFocus />
-    </EditText>
+        android:layout_height="match_parent"
+        class="com.covent.StoryBook.LinedEditText"
+        android:background="@android:color/transparent"
+        android:capitalize="sentences"
+        android:fadingEdge="vertical"
+        android:gravity="top"
+        android:padding="5dp"
+        android:scrollbars="vertical"
+        android:textSize="22sp" />
 
 </LinearLayout>

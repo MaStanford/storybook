@@ -10,11 +10,14 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.Html;
+import android.text.Spanned;
 import android.util.Base64;
 
 /**
  * Represents the page of a story book
- * Implements parceable for use with a custom view adapter
+ * Implements parceable for use with a custom view adapter - Not anymore.  Decided not to use parcelable
+ * may have to impelment it later if needed but for now, at this scale it is not needed
  * Implements a JSON serializer for saving as a JSON object
  * @author mStanford
  *
@@ -33,7 +36,7 @@ public class Page implements Parcelable{
 	private Bitmap mBitmapPicture = null;
 	private Bitmap mBitmapText = null;
 	private String mStoryText = null;
-	private int mPageType = 0; // 0-text,1-drawn,2-cover,3-toc
+	private int mPageType = 0; //Defined in constants
 
 	/**
 	 * Create a page from a json object
@@ -43,7 +46,7 @@ public class Page implements Parcelable{
 	public Page(JSONObject json) throws JSONException{
 		setBitmapPicture(getBitmapFromString(json.getString(JSON_IMAGE)));
 		setStoryText(json.getString(JSON_TEXT));
-		setBitmapPicture(getBitmapFromString(json.getString(JSON_PAINTED_TEXT)));
+		setBitmapText(getBitmapFromString(json.getString(JSON_PAINTED_TEXT)));
 		setPageType(json.getInt(JSON_PAGE_TYPE));
 	}
 
@@ -55,10 +58,11 @@ public class Page implements Parcelable{
 	} 
 
 	/**
-	 * 0-text, 1- image, 2-cover, 3- toc
+	 * Page type is defined in Constants.
 	 * @param pageType
 	 */
 	public Page(Context context,int pageType) {
+		setStoryText("Write text here.");
 		setBitmapPicture(BitmapFactory.decodeResource(context.getResources(),R.drawable.ic_launcher));
 		setBitmapText(BitmapFactory.decodeResource(context.getResources(),R.drawable.ic_launcher));
 		setPageType(pageType);
@@ -167,6 +171,10 @@ public class Page implements Parcelable{
 
 	public void setStoryText(String storyText) {
 		mStoryText = storyText;
+	}
+	
+	public void setStoryText(Spanned storyText) {
+		mStoryText = Html.toHtml(storyText);
 	}
 
 	public Bitmap getBitmapPicture() {

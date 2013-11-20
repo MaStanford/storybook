@@ -1,15 +1,10 @@
 package com.covent.StoryBook;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONTokener;
 
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -19,6 +14,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.IBinder;
 import android.os.Binder;
+import android.widget.Toast;
 
 /**
  * Service for the Story book
@@ -26,10 +22,10 @@ import android.os.Binder;
  */
 public class ServiceStoryBook extends Service {
 	
-	final String TAG = "ServiceStoryBook";
+	final static String TAG = "ServiceStoryBook";
 	
 	//Array of pages
-	private ArrayList<Page> mPageArray = new ArrayList<Page>();
+	private ArrayList<Page> mPageArray;
 
 	// Binder given to clients
 	private final IBinder mBinder = new LocalBinder();
@@ -39,9 +35,6 @@ public class ServiceStoryBook extends Service {
 	
 	//json serializer
 	private PageJSONSerializer mPageJSONSerializer;
-	
-	//Filename to save, this will be pulled from shared preferences later on
-	private String mFileName = "myStoryBook.json";
 	
 	//Context
 	Context mContext;
@@ -64,8 +57,6 @@ public class ServiceStoryBook extends Service {
 	
 	@Override
 	public boolean onUnbind(Intent intent) {
-//		// Unregister the Broadcast reciever
-//		unregisterReceiver(NewPageReceiver);
 		return super.onUnbind(intent);
 	}
 	
@@ -91,31 +82,24 @@ public class ServiceStoryBook extends Service {
 	 * @param intent
 	 */
 	private void receivedPageBroadcast(Intent intent) {
-
 		Constants.DEBUG_LOG("ReceieveBroadcast", "Received Intent" + intent.getAction());
 		//The user creates a new page and intent with extra new page intent is sent
 		if (intent.getAction().equals(Constants.KEY_NEW_PAGE_INTENT)) {
-			
 			//Create a new page object from a parcel grabbed from an intent
 			Page mNewPage = intent.getParcelableExtra(Constants.KEY_PARCEL_PAGE);
 			//Add the page at the end
 			addPage(mNewPage);
-			
 			//Array was altered intent.  Updates Adapter and UI
 			Intent UIstop = new Intent(Constants.KEY_REFRESH_ADAPTER_INTENT);
 			this.sendBroadcast(UIstop);
 		//User has made a change to the current page
 		} else if(intent.getAction().equals(Constants.KEY_NEW_PAGE_INTENT_POSITION)){
-			
 			Constants.DEBUG_LOG("Service Recieved new page", "Before new page from parcel");
-			
 			//Create a page from the parceable extra and replace the pointed to page
 			Page mNewPage = intent.getParcelableExtra(Constants.KEY_PARCEL_PAGE);
-			int mIndex = intent.getIntExtra(Constants.KEY_EXTRA_POSITON, 3);
+			int mIndex = intent.getIntExtra(Constants.KEY_NEW_PAGE_EXTRA_POSITON, 3);
 			setPage(mIndex,mNewPage);
-			
 			Constants.DEBUG_LOG("Service Recieved new page", "After new page from parcel");
-			
 			//Array was altered intent.  Updates Adapter and UI
 			Intent UIstop = new Intent(Constants.KEY_REFRESH_ADAPTER_INTENT);
 			this.sendBroadcast(UIstop);
@@ -125,9 +109,9 @@ public class ServiceStoryBook extends Service {
 		mContext = context;
 	}
 	
-	public void setArray(ArrayList<Page> pageArray){
-		//mPageArray.clear();
+	public boolean setArray(ArrayList<Page> pageArray){
 		mPageArray = pageArray;
+		return true;
 	}
 	
 	public ArrayList<Page> getArray(){
@@ -157,12 +141,35 @@ public class ServiceStoryBook extends Service {
 		return mPageArray.size();
 	}
 	
-	public String getFileName() {
-		return mFileName;
+	public File getFileName() {
+		return mPreferenceManager.getFileName();
 	}
 
-	public void setFileName(String fileName) {
-		mFileName = fileName;
+	public void setFileName(File fileName) {
+		
+		mPreferenceManager.setFileName(fileName);
+	}
+	
+	/**
+	 * displays a spinner with all the filenames in the local directory.
+	 * I will need to also have a way for someone to search their external for the files
+	 * TODO: implement this in a spinner and also get external directory involved
+	 * @return
+	 */
+	public File[] getLoadFiles(){
+		
+		//File mDirectory = getFilesDir(); 
+		File mDirectory;
+		try{
+			mDirectory = StoryBookApp.getApp().getExternalOutputDirectory();
+		} catch (IOException e){
+			//No SDCard
+			mDirectory = StoryBookApp.getApp().getInternalOutputDirectory();
+		} 
+		
+		File[] mSubFiles = mDirectory.listFiles();
+		
+		return mSubFiles;
 	}
 	
 	public PreferenceManager getPreferenceManager() {
@@ -173,52 +180,91 @@ public class ServiceStoryBook extends Service {
 		mPreferenceManager = preferenceManager;
 	}
 
+	/**
+	 * Grabs the filename from sharedpreferences.  Automatically checks to see if external r/w and saved
+	 * to external if availible or internal if not.
+	 * 
+	 * @return If the save is successful
+	 */
 	public boolean saveStoryBook(){
+		
+		//Set the file to the directory and the filename
+		File mFileName = getFileName();
+		
 		try {
+			//Show the user where the save is going to be
+			Toast.makeText(mContext, "Saving " + mFileName.getPath() + ".JSON...", Toast.LENGTH_LONG).show();
+			//Send the serializer the file and the array to save
 			mPageJSONSerializer.saveJSON(mPageArray,mFileName);
 			Constants.DEBUG_LOG(TAG,"StoryBook saved to file.");
 			return true;
 		} catch (Exception e){
-			Constants.DEBUG_LOG(TAG,"Error Saving StoryBook: , + e");
+			Constants.DEBUG_LOG(TAG,"Error Saving StoryBook: , "+ e);
 			return false;
 		}
 	}
 	
-	public ArrayList<Page> loadStoryBook() throws JSONException, IOException {
-		ArrayList<Page> mStoryBook = new ArrayList<Page>();
-		BufferedReader mBufferedReader = null;
-		try{
-			InputStream mInStream = mContext.openFileInput(getFileName());
-			mBufferedReader = new BufferedReader(new InputStreamReader(mInStream));
-			StringBuilder mJSONString = new StringBuilder();
-			//Have a placeholder for each string
-			String mLine = null;
-			//read each line and append to the json string
-			while((mLine = mBufferedReader.readLine()) != null ){
-				mJSONString.append(mLine);
-			}
-			//Grab JSON tokens from string
-			JSONArray mJSONArray = (JSONArray) new JSONTokener(mJSONString.toString()).nextValue();
-			//build array of pages from the tokens
-			for(int i = 0; i < mJSONArray.length(); i++){
-				mStoryBook.add(new Page(mJSONArray.getJSONObject(i)));
-			}
-		} catch (FileNotFoundException mError){
-			
-		} finally {
-			if(mBufferedReader != null){
-				mBufferedReader.close();
-			}
+	/**
+	 * Sets the filename in sharedpreferences and saves the file.  Automatically checks to see if external r/w and saved
+	 * to external if availible or internal if not.
+	 * 
+	 * @return If the save is successful
+	 */
+	public boolean saveStoryBook(String filename){
+		//Set the file to the directory and the filename
+		File mFileName = FileSystemUtil.getSaveLoadFilePath(filename);
+		try {
+			Toast.makeText(mContext, "Saving " + mFileName.getPath() + ".JSON...", Toast.LENGTH_LONG).show();
+			mPageJSONSerializer.saveJSON(mPageArray,mFileName);
+			Constants.DEBUG_LOG(TAG,"StoryBook saved to file.");
+			setFileName(mFileName);
+			return true;
+		} catch (Exception e){
+			Constants.DEBUG_LOG(TAG,"Error Saving StoryBook: , "+ e);
+			return false;
 		}
-		return mStoryBook;
-	}	
+	}
+	
+	/**
+	 * Loads the storybook into the service
+	 * Gets the filename and path from the shared preferences
+	 * @return
+	 * @throws JSONException
+	 * @throws IOException
+	 */
+	public ArrayList<Page> loadStoryBook() throws JSONException, IOException{
+		//Set the file to the directory and the filename
+		File mFileName = getFileName();
+		//Toast.makeText(mContext, "Loading " + mFileName.getPath() + ".JSON...", Toast.LENGTH_LONG).show();
+		mPageArray = mPageJSONSerializer.loadStoryBook(mFileName);
+		return mPageArray;
+	}
+	
+	/**
+	 * Loads the storybook into the Service
+	 * Sets the shared prefs filename
+	 * Gets full path and filename from arguement
+	 * @return
+	 * @throws JSONException
+	 * @throws IOException
+	 */
+	public ArrayList<Page> loadStoryBook(File filename) throws JSONException, IOException{
+		//Toast.makeText(mContext, "Loading " + filename.getPath() + ".JSON...", Toast.LENGTH_LONG).show();
+		mPreferenceManager.setFileName(filename);
+		mPageArray = mPageJSONSerializer.loadStoryBook(filename);
+		return mPageArray;
+	}
 	
 	public void onCreate() {
 		super.onCreate();
 		//Start the preference manager
 		setPreferenceManager(new PreferenceManager(getApplicationContext()));
+		//Set the context
+		mContext=getBaseContext();
 		//Create a new serializer for saving
-		mPageJSONSerializer = new PageJSONSerializer(mContext, getFileName());
+		mPageJSONSerializer = new PageJSONSerializer(mContext, getFileName().getPath());
+		//Not needed since the only time the array will be blank is if the user starts a new project and that activity will init the array
+		//mPageArray = new ArrayList<Page>();
 		
 		/*****************************************
 		 *BROADCAST RECEIEVER  

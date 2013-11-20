@@ -7,7 +7,7 @@
 
     <view
         xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/note"
+        android:id="@+id/tv_story_text"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
@@ -20,12 +20,14 @@
         android:scrollbars="vertical"
         android:textSize="22sp" />
 
-    <ImageButton
-        android:id="@+id/image_button_text_page"
+    <view
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        class="com.covent.StoryBook.StoryImage"
+        android:id="@+id/image_main_view"
         android:layout_width="200dp"
         android:layout_height="200dp"
         android:layout_gravity="center_horizontal"
-        android:layout_weight="0"
+        android:scaleType="fitCenter"
         android:src="@drawable/ic_launcher" />
 
 </LinearLayout>
