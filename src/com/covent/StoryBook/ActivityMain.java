@@ -562,8 +562,6 @@ public class ActivityMain extends Activity {
 		setContentView(R.layout.main_layout);
 
 		mContext = getBaseContext();
-		
-		getActionBar().setDisplayHomeAsUpEnabled(true);
 
 		// Grab my references for main view
 		btn_next = (Button) findViewById(R.id.btn_new_project);
@@ -607,7 +605,6 @@ public class ActivityMain extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
-			// app icon in action bar clicked; go home.
 			return true;
 		case R.id.menu_add_page:
 			createNewPage(Constants.PAGE_TYPE_TEXT);
