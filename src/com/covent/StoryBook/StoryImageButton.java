@@ -13,7 +13,7 @@ import android.widget.ImageButton;
  * @author admin
  *
  */
-public class StoryImage extends ImageButton {
+public class StoryImageButton extends ImageButton {
 	
 	private final String TAG = "StoryImage";
 
@@ -21,7 +21,7 @@ public class StoryImage extends ImageButton {
 	 * @param context
 	 * @param attrs
 	 */
-	public StoryImage(Context context, AttributeSet attrs) {
+	public StoryImageButton(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		//setBackgroundColor(17170445); //clear but null/0 works also
 		setBackgroundColor(0);

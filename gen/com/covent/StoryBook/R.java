@@ -28,10 +28,10 @@ public final class R {
         public static final int nav_btns=0x7f070002;
         public static final int page_layout=0x7f070008;
         public static final int start_header=0x7f070009;
+        public static final int story_image_view=0x7f070007;
         public static final int text_page_number=0x7f070000;
         public static final int tv_story_text=0x7f070006;
         public static final int viewFlipper1=0x7f070001;
-        public static final int view_image=0x7f070007;
     }
     public static final class layout {
         public static final int layout_error=0x7f030000;

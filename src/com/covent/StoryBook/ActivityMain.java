@@ -172,11 +172,12 @@ public class ActivityMain extends Activity {
 
 		//Intent send when the editText object receives a textchanged callback
 		if (intent.getAction().equals(Constants.KEY_TEXT_CHANGE_INTENT)) {
-			TextView mText = (TextView) mViewFlipper.getCurrentView().findViewById(R.id.tv_story_text);
-			Constants.DEBUG_LOG("Receieved text", mText.getText().toString());
-			//Tried to use HTML to mark text but decided to do spannable instead - mStanford
-			//mService.getPage(mPosition).setStoryText(Html.fromHtml(mText.getText().toString()));
-			mService.getPage(mPosition).setStoryText(mText.getText().toString());
+			//Check to make sure current page is text page.
+			if(mViewAdapter.getItem(mPosition).getPageType() == 0){
+				TextView mText = (TextView) mViewFlipper.getCurrentView().findViewById(R.id.tv_story_text);
+				Constants.DEBUG_LOG("Receieved text", mText.getText().toString());
+				mService.getPage(mPosition).setStoryText(mText.getText().toString());
+			}
 			return;
 		}
 
@@ -184,6 +185,14 @@ public class ActivityMain extends Activity {
 		if (intent.getAction().equals(Constants.KEY_IMAGE_CLICKED_INTENT)) {
 			loadImage();
 			return;
+		}
+		
+		if (intent.getAction().equals(Constants.KEY_IMAGE_DRAW_INTENT)){
+			//Check to make sure current page is image page.
+			if(mViewAdapter.getItem(mPosition).getPageType() == 1){
+				StoryImageView mSIV = (StoryImageView) mViewFlipper.getCurrentView().findViewById(R.id.story_image_view);
+				mViewAdapter.getItem(mPosition).setBitmapText(mSIV.getBitmap());
+			}
 		}
 	}
 
@@ -255,7 +264,7 @@ public class ActivityMain extends Activity {
 			return true;
 		}
 	}
-	
+
 	/**
 	 * Creates the dialogs used for saving and loading.
 	 * @author mstanford
@@ -345,7 +354,7 @@ public class ActivityMain extends Activity {
 		mDialog = buildDialog.create();
 		return mDialog;
 	}
-	
+
 	/**
 	 * The onclick listener grabs the View ID of the checked button.
 	 * I check to see which index it is in the radio group.  
@@ -355,12 +364,12 @@ public class ActivityMain extends Activity {
 	 * @return
 	 */
 	public int setRadioButtons(RadioGroup group,int checkedID){
-		
+
 		int mIndex;
 		mIndex = group.indexOfChild(group.findViewById(checkedID));
-		
+
 		Constants.DEBUG_LOG(TAG, "mIndex = " + mIndex);
-		
+
 		mDialog.dismiss();
 		switch (mIndex){
 		case 0:
@@ -411,27 +420,27 @@ public class ActivityMain extends Activity {
 			}
 		}
 	}
-	
+
 	public void sendEmail(){
 		Intent mEmail = new Intent(Intent.ACTION_SEND);
-		
+
 		mEmail.setType("message/rfc822");
 		mEmail.putExtra(Intent.EXTRA_EMAIL  , new String[]{"recipient@example.com"});
 		mEmail.putExtra(Intent.EXTRA_SUBJECT, "Subject");
 		mEmail.putExtra(Intent.EXTRA_TEXT   , "Body");
-		
+
 		saveStoryBook(Constants.CODE_SAVE);
-		
+
 		File mFileName = mService.getFileName();
-		
+
 		Uri mFileUri = Uri.parse("file://" + mFileName); // + ".json");
-		
+
 		mEmail.putExtra(Intent.EXTRA_STREAM, mFileUri);
-		
+
 		try {
-		    startActivity(Intent.createChooser(mEmail, "Email StoryBook"));
+			startActivity(Intent.createChooser(mEmail, "Email StoryBook"));
 		} catch (android.content.ActivityNotFoundException ex) {
-		    Toast.makeText(mContext, "There are no email clients installed.", Toast.LENGTH_SHORT).show();
+			Toast.makeText(mContext, "There are no email clients installed.", Toast.LENGTH_SHORT).show();
 		}
 	}
 
@@ -444,7 +453,7 @@ public class ActivityMain extends Activity {
 		Intent mIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 		startActivityForResult(mIntent, Constants.CODE_RESULT_LOAD_IMAGE);
 	}
-	
+
 	/**
 	 * Saves the book.  
 	 * @param code Set in Constants
@@ -464,12 +473,12 @@ public class ActivityMain extends Activity {
 			break;
 		}
 	}
-	
+
 	public void loadStoryBook(){
 		Dialog loadDialog = onAlertDialog(1);
 		loadDialog.show();
 	}
-	
+
 	public void createNewPage(){
 		Dialog mDialog = onAlertDialog(Constants.DIALOG_NEW_PAGE);
 		mDialog.show();
@@ -493,7 +502,7 @@ public class ActivityMain extends Activity {
 			mHandler.sendEmptyMessage(0);
 		}
 	}
-	
+
 	/**
 	 * Deletes the current page if it's not the first page.
 	 */
@@ -615,6 +624,7 @@ public class ActivityMain extends Activity {
 		mIntent.addAction(Constants.KEY_REFRESH_ADAPTER_INTENT);
 		mIntent.addAction(Constants.KEY_TEXT_CHANGE_INTENT);
 		mIntent.addAction(Constants.KEY_IMAGE_CLICKED_INTENT);
+		mIntent.addAction(Constants.KEY_IMAGE_DRAW_INTENT);
 		registerReceiver(ActivityReceiver, mIntent);
 		mHandler.sendEmptyMessage(0);
 	}

@@ -2,53 +2,58 @@ package com.covent.StoryBook;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.MaskFilter;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
+/*
+ * TODO: Broadcast an intent everytime there is a new touchup to save the bitmap.  Receive broadcast in main and call save()
+ * Make sure the bitmap is saved in the page. Righ tnow its not saving for some reason
+ */
+
 public class StoryImageView extends View {
-	
+
 	//Bitmap
 	private Path    mPath;
 	private Paint   mBitmapPaint;
 	private Paint   mGraphPaint;
 
-	static Bitmap  mLoadedBitmap;
-
 	//Paint
 	private static Paint mPaint;
-	private MaskFilter  mEmboss;
-	private MaskFilter  mBlur;
 	private static Bitmap  mBitmap;
 	private static Canvas  mCanvas;
-	private static boolean mEraseMode = false;
-	private static final int PAINT_WIDTH = 5;
-	private static final int ERASE_WIDTH = 50;
-	private static int RESULT_LOAD_IMAGE = 1;
-	private static boolean mSaveType = true;  //temporary for testing
 	private static int mScreenHeight = 0;
 	private static int mScreenWidth = 0;
-	private static boolean mEmbossState = false;
-	private static boolean mFadedState = false;
-	private static boolean mBlurState = false;
-	private static boolean mGraphPaperState = false;
-	
+	private static final float PAINT_WIDTH = 10;
+
+
 	//Touch 
 	private float mX, mY;
 	private static final float TOUCH_TOLERANCE = 4;
 
 
+
 	public StoryImageView(Context context) {
 		super(context);
 		mPath = new Path();
-		mBitmapPaint = new Paint(Paint.DITHER_FLAG);
-		mGraphPaint = new Paint(Paint.DITHER_FLAG);
+		{
+			mBitmapPaint = new Paint(Paint.DITHER_FLAG);
+			mGraphPaint = new Paint(Paint.DITHER_FLAG);
+			mPaint = new Paint();
+			mPaint.setAntiAlias(true);
+			mPaint.setDither(true);
+			mPaint.setColor(0xFFFF0000);
+			mPaint.setStyle(Paint.Style.STROKE);
+			mPaint.setStrokeJoin(Paint.Join.ROUND);
+			mPaint.setStrokeCap(Paint.Cap.ROUND);
+			mPaint.setStrokeWidth(PAINT_WIDTH);
+		}
 	}
 
 	public StoryImageView(Context context, AttributeSet attrs) {
@@ -56,6 +61,18 @@ public class StoryImageView extends View {
 		mPath = new Path();
 		mBitmapPaint = new Paint(Paint.DITHER_FLAG);
 		mGraphPaint = new Paint(Paint.DITHER_FLAG);
+		{
+			mBitmapPaint = new Paint(Paint.DITHER_FLAG);
+			mGraphPaint = new Paint(Paint.DITHER_FLAG);
+			mPaint = new Paint();
+			mPaint.setAntiAlias(true);
+			mPaint.setDither(true);
+			mPaint.setColor(0xFFFF0000);
+			mPaint.setStyle(Paint.Style.STROKE);
+			mPaint.setStrokeJoin(Paint.Join.ROUND);
+			mPaint.setStrokeCap(Paint.Cap.ROUND);
+			mPaint.setStrokeWidth(PAINT_WIDTH);
+		}
 	}
 
 	public StoryImageView(Context context, AttributeSet attrs, int defStyle) {
@@ -63,6 +80,18 @@ public class StoryImageView extends View {
 		mPath = new Path();
 		mBitmapPaint = new Paint(Paint.DITHER_FLAG);
 		mGraphPaint = new Paint(Paint.DITHER_FLAG);
+		{
+			mBitmapPaint = new Paint(Paint.DITHER_FLAG);
+			mGraphPaint = new Paint(Paint.DITHER_FLAG);
+			mPaint = new Paint();
+			mPaint.setAntiAlias(true);
+			mPaint.setDither(true);
+			mPaint.setColor(0xFFFF0000);
+			mPaint.setStyle(Paint.Style.STROKE);
+			mPaint.setStrokeJoin(Paint.Join.ROUND);
+			mPaint.setStrokeCap(Paint.Cap.ROUND);
+			mPaint.setStrokeWidth(PAINT_WIDTH);
+		}
 	}
 
 
@@ -94,7 +123,7 @@ public class StoryImageView extends View {
 		mY = y;
 		mCanvas.drawPoint(x, y, mPaint);
 	}
-	
+
 	@SuppressLint("WrongCall")
 	public void clearDrawing(){
 		mBitmap.eraseColor(Color.WHITE);
@@ -112,8 +141,8 @@ public class StoryImageView extends View {
 			mY = y;
 		}
 	}
-	
-	
+
+
 	public void removeGraph()
 	{
 		float mHeight = mScreenHeight;
@@ -131,7 +160,7 @@ public class StoryImageView extends View {
 		}
 		this.invalidate();
 	}
-	
+
 	public void loadCanvas(Bitmap mNewBitMap)
 	{
 		mCanvas.drawBitmap(mNewBitMap, 0, 0, null);
@@ -144,6 +173,9 @@ public class StoryImageView extends View {
 		mCanvas.drawPath(mPath, mPaint);
 		// kill this so we don't double draw
 		mPath.reset();
+		//Create the intent to send to save changes
+		Intent mIntent = new Intent(Constants.KEY_IMAGE_DRAW_INTENT);
+		getContext().sendBroadcast(mIntent);
 	}
 
 	@Override
@@ -166,5 +198,14 @@ public class StoryImageView extends View {
 			break;
 		}
 		return true;
+	}
+
+	public void setBitmap(Bitmap bitmapText) {
+		mBitmap = bitmapText;
+		this.invalidate();
+	}
+	
+	public Bitmap getBitmap(){
+		return mBitmap;
 	}
 }

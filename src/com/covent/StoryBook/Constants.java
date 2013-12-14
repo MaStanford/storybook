@@ -67,6 +67,8 @@ public class Constants {
 	public static final String KEY_TEXT_CHANGE_INTENT = "covent_text_change_intent";
 	// key for when the imageview is clicked
 	public static final String KEY_IMAGE_CLICKED_INTENT = "covent_image_clicked_intent";
+	//For when a draw event happens in the paint screen
+	public static final String KEY_IMAGE_DRAW_INTENT = "covent_image_draw_intent";
 
 	// Errors
 	public static final String CREATE_OUT_DIR_ERROR = "CREATE_OUT_DIR_ERROR";
