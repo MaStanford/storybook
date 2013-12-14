@@ -27,6 +27,7 @@ public class ViewAdapter extends BaseAdapter {
 	public ArrayList<Page> storybook;
 	private LayoutInflater mInflater;
 	private ViewFlipper mViewFlipper;
+	private String TAG = "ViewAdapter";
 
 	/**
 	 * The default constructor
@@ -97,8 +98,6 @@ public class ViewAdapter extends BaseAdapter {
 				mImageButton.setImageBitmap(storybook.get(position).getBitmapPicture());
 			EditText mEditText = (EditText) convertView.findViewById(R.id.tv_story_text);
 			if(storybook.get(position).getStoryText() != null){
-				//I originally used html to mark text, but switched it to spannable - mStanford
-				//mEditText2.setText(Html.fromHtml(storybook.get(position).getStoryText()));
 				mEditText.setText(storybook.get(position).getStoryText());
 			}
 			break;
@@ -116,7 +115,10 @@ public class ViewAdapter extends BaseAdapter {
 				mImageView2.setImageBitmap(storybook.get(position).getBitmapPicture());
 			//Need to grab the custom view and set the bitmap as the bitmap in the page object
 			StoryImageView mStoryImageView = (StoryImageView) convertView.findViewById(R.id.story_image_view);
-			mStoryImageView.setBitmap(storybook.get(position).getBitmapText());
+			if(storybook.get(position).getBitmapText() != null){
+				mStoryImageView.setBitmap(storybook.get(position).getBitmapText());
+				//Constants.DEBUG_LOG(TAG, "Bitmap = " + Page.getStringFromBitmap(storybook.get(position).getBitmapText()));
+			}
 			break;
 		}
 		
@@ -128,8 +130,6 @@ public class ViewAdapter extends BaseAdapter {
 				mImageView.setImageBitmap(storybook.get(position).getBitmapPicture());
 			EditText mCoverEditText = (EditText) convertView.findViewById(R.id.tv_story_text);
 			if(storybook.get(position).getStoryText() != null){
-				//I originally used html to mark text, but switched it to spannable - mStanford
-				//mEditText2.setText(Html.fromHtml(storybook.get(position).getStoryText()));
 				mCoverEditText.setText(storybook.get(position).getStoryText());
 			}
 			break;
@@ -140,8 +140,6 @@ public class ViewAdapter extends BaseAdapter {
 			convertView = mInflater.inflate(R.layout.page_layout_toc, null);
 			EditText mTOCEditText = (EditText) convertView.findViewById(R.id.tv_story_text);
 			if(storybook.get(position).getStoryText() != null){
-				//I originally used html to mark text, but switched it to spannable - mStanford
-				//mEditText2.setText(Html.fromHtml(storybook.get(position).getStoryText()));
 				mTOCEditText.setText(storybook.get(position).getStoryText());
 			}
 			break;

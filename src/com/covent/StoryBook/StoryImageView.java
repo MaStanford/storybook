@@ -13,8 +13,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 /*
- * TODO: Broadcast an intent everytime there is a new touchup to save the bitmap.  Receive broadcast in main and call save()
- * Make sure the bitmap is saved in the page. Righ tnow its not saving for some reason
+ * TODO: for some reason i cant get the loaded bitmap to be drawn
  */
 
 public class StoryImageView extends View {
@@ -36,6 +35,7 @@ public class StoryImageView extends View {
 	//Touch 
 	private float mX, mY;
 	private static final float TOUCH_TOLERANCE = 4;
+	private static final String TAG = "StoryImageView";
 
 
 
@@ -48,7 +48,7 @@ public class StoryImageView extends View {
 			mPaint = new Paint();
 			mPaint.setAntiAlias(true);
 			mPaint.setDither(true);
-			mPaint.setColor(0xFFFF0000);
+			mPaint.setColor(Color.BLACK);
 			mPaint.setStyle(Paint.Style.STROKE);
 			mPaint.setStrokeJoin(Paint.Join.ROUND);
 			mPaint.setStrokeCap(Paint.Cap.ROUND);
@@ -67,7 +67,7 @@ public class StoryImageView extends View {
 			mPaint = new Paint();
 			mPaint.setAntiAlias(true);
 			mPaint.setDither(true);
-			mPaint.setColor(0xFFFF0000);
+			mPaint.setColor(Color.BLACK);
 			mPaint.setStyle(Paint.Style.STROKE);
 			mPaint.setStrokeJoin(Paint.Join.ROUND);
 			mPaint.setStrokeCap(Paint.Cap.ROUND);
@@ -86,7 +86,7 @@ public class StoryImageView extends View {
 			mPaint = new Paint();
 			mPaint.setAntiAlias(true);
 			mPaint.setDither(true);
-			mPaint.setColor(0xFFFF0000);
+			mPaint.setColor(Color.BLACK);
 			mPaint.setStyle(Paint.Style.STROKE);
 			mPaint.setStrokeJoin(Paint.Join.ROUND);
 			mPaint.setStrokeCap(Paint.Cap.ROUND);
@@ -101,11 +101,9 @@ public class StoryImageView extends View {
 		super.onSizeChanged(w, h, oldw, oldh);
 		mScreenHeight = h;
 		mScreenWidth = w;
-		mBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+		mBitmap = Bitmap.createBitmap(mScreenWidth, mScreenHeight, Bitmap.Config.ARGB_8888);
 		mCanvas = new Canvas(mBitmap);
-		//http://stackoverflow.com/questions/9901024/android-bitmap-how-to-save-canvas-with-green-background-in-android
 		mCanvas.drawColor(Color.WHITE);
-		super.onSizeChanged(w, h, oldw, oldh);
 	}
 
 
@@ -142,9 +140,7 @@ public class StoryImageView extends View {
 		}
 	}
 
-
-	public void removeGraph()
-	{
+	public void removeGraph(){
 		float mHeight = mScreenHeight;
 		float mWidth = mScreenWidth;
 		float mHeightInc = mScreenHeight / 25;
@@ -161,9 +157,8 @@ public class StoryImageView extends View {
 		this.invalidate();
 	}
 
-	public void loadCanvas(Bitmap mNewBitMap)
-	{
-		mCanvas.drawBitmap(mNewBitMap, 0, 0, null);
+	public void loadCanvas(Bitmap mNewBitMap){
+		mCanvas.drawBitmap(mNewBitMap, 0, 0, mBitmapPaint);
 		this.invalidate();
 	}
 
@@ -202,7 +197,9 @@ public class StoryImageView extends View {
 
 	public void setBitmap(Bitmap bitmapText) {
 		mBitmap = bitmapText;
-		this.invalidate();
+		Constants.DEBUG_LOG(TAG, "SetBitmap called. Is Canvas Null? " + mCanvas);
+		if(mCanvas != null)
+			loadCanvas(bitmapText);
 	}
 	
 	public Bitmap getBitmap(){

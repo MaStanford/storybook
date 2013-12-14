@@ -190,8 +190,10 @@ public class ActivityMain extends Activity {
 		if (intent.getAction().equals(Constants.KEY_IMAGE_DRAW_INTENT)){
 			//Check to make sure current page is image page.
 			if(mViewAdapter.getItem(mPosition).getPageType() == 1){
+				Constants.DEBUG_LOG(TAG, "DRAW CHANGE INTENT CALLED");
 				StoryImageView mSIV = (StoryImageView) mViewFlipper.getCurrentView().findViewById(R.id.story_image_view);
-				mViewAdapter.getItem(mPosition).setBitmapText(mSIV.getBitmap());
+				mService.getPage(mPosition).setBitmapText(mSIV.getBitmap());
+				//Constants.DEBUG_LOG(TAG, "Bitmap = " + Page.getStringFromBitmap(mSIV.getBitmap()));
 			}
 		}
 	}

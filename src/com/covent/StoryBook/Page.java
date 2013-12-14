@@ -131,7 +131,7 @@ public class Page implements Parcelable{
 	 * @param bitmapPicture
 	 * @return Encoded String
 	 */
-	private String getStringFromBitmap(Bitmap bitmapPicture) {
+	public static String getStringFromBitmap(Bitmap bitmapPicture) {
 
 		final int COMPRESSION_QUALITY = 100;
 		String mEncodedImageString;
@@ -150,7 +150,7 @@ public class Page implements Parcelable{
 	 * @param jsonString Encoded String of a Bitmap
 	 * @return Bitmap
 	 */
-	private Bitmap getBitmapFromString(String jsonString) {
+	public static Bitmap getBitmapFromString(String jsonString) {
 
 		byte[] mDecodedString = Base64.decode(jsonString, Base64.DEFAULT);
 		Bitmap mDecodedByte = BitmapFactory.decodeByteArray(mDecodedString, 0, mDecodedString.length);
