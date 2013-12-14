@@ -17,29 +17,32 @@ public final class R {
         public static final int btn_load_project=0x7f070003;
         public static final int btn_new_project=0x7f070004;
         public static final int image_main_view=0x7f070005;
-        public static final int menu_add_page=0x7f07000b;
-        public static final int menu_delete_page=0x7f07000c;
-        public static final int menu_email=0x7f070009;
-        public static final int menu_load=0x7f07000f;
-        public static final int menu_new_project=0x7f070010;
-        public static final int menu_save=0x7f07000d;
-        public static final int menu_save_as=0x7f07000e;
-        public static final int menu_text_format=0x7f07000a;
+        public static final int menu_add_page=0x7f07000c;
+        public static final int menu_delete_page=0x7f07000d;
+        public static final int menu_email=0x7f07000a;
+        public static final int menu_load=0x7f070010;
+        public static final int menu_new_project=0x7f070011;
+        public static final int menu_save=0x7f07000e;
+        public static final int menu_save_as=0x7f07000f;
+        public static final int menu_text_format=0x7f07000b;
         public static final int nav_btns=0x7f070002;
-        public static final int page_layout=0x7f070007;
-        public static final int start_header=0x7f070008;
+        public static final int page_layout=0x7f070008;
+        public static final int start_header=0x7f070009;
         public static final int text_page_number=0x7f070000;
         public static final int tv_story_text=0x7f070006;
         public static final int viewFlipper1=0x7f070001;
+        public static final int view_image=0x7f070007;
     }
     public static final class layout {
         public static final int layout_error=0x7f030000;
         public static final int main_layout=0x7f030001;
         public static final int page_layout_cover=0x7f030002;
-        public static final int page_layout_text_even=0x7f030003;
-        public static final int page_layout_text_odd=0x7f030004;
-        public static final int page_layout_toc=0x7f030005;
-        public static final int start_layout=0x7f030006;
+        public static final int page_layout_image_even=0x7f030003;
+        public static final int page_layout_image_odd=0x7f030004;
+        public static final int page_layout_text_even=0x7f030005;
+        public static final int page_layout_text_odd=0x7f030006;
+        public static final int page_layout_toc=0x7f030007;
+        public static final int start_layout=0x7f030008;
     }
     public static final class menu {
         public static final int activity_main=0x7f060000;
@@ -49,6 +52,7 @@ public final class R {
         public static final int dialog_back_button=0x7f040015;
         public static final int dialog_cancel_button=0x7f040013;
         public static final int dialog_load_title=0x7f040017;
+        public static final int dialog_new_page_title=0x7f040018;
         public static final int dialog_project_title=0x7f040016;
         public static final int dialog_save_button=0x7f040012;
         public static final int dialog_save_title=0x7f040011;
@@ -66,6 +70,8 @@ public final class R {
         public static final int menu_save_as=0x7f040005;
         public static final int menu_text_format=0x7f040008;
         public static final int new_project_btn=0x7f04000d;
+        public static final int radio_button_image=0x7f04001a;
+        public static final int radio_button_text=0x7f040019;
         public static final int start_header=0x7f04000c;
         public static final int text_layout_error=0x7f04000f;
         public static final int toc_header=0x7f040009;

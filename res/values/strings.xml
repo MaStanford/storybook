@@ -24,5 +24,8 @@
     <string name="dialog_back_button">Back</string>
     <string name="dialog_project_title">Story Title</string>
     <string name="dialog_load_title">Load Story</string>
+    <string name="dialog_new_page_title">New Page Type</string>
+    <string name="radio_button_text">Text Page</string>
+    <string name="radio_button_image">Drawn Page</string>
 
 </resources>

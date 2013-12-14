@@ -133,6 +133,16 @@ public class ServiceStoryBook extends Service {
 		return 1;
 	}
 	
+	public int removePage(int position){
+		mPageArray.remove(position);
+		return 1;
+	}
+	
+	public int removePage(Page page){
+		mPageArray.remove(page);
+		return 1;
+	}
+	
 	public Page getPage(int index){
 		return mPageArray.get(index);
 	}
@@ -141,10 +151,18 @@ public class ServiceStoryBook extends Service {
 		return mPageArray.size();
 	}
 	
+	/**
+	 * returns the filename that is saved in the shared preferences.  This filename is set when a project is loaded, started, or saved as. 
+	 * @return
+	 */
 	public File getFileName() {
 		return mPreferenceManager.getFileName();
 	}
 
+	/**
+	 * sets the filename in the Shared preferences
+	 * @param fileName
+	 */
 	public void setFileName(File fileName) {
 		
 		mPreferenceManager.setFileName(fileName);

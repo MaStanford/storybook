@@ -27,6 +27,7 @@ import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -51,10 +52,13 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.RadioGroup.OnCheckedChangeListener;
 
 /**
  * @author mStanford
@@ -78,8 +82,10 @@ public class ActivityMain extends Activity {
 	boolean mBound = false;
 	//context
 	Context mContext;
-	//
+	//The dialog
 	AlertDialog mDialog;
+	//Radio button for dialog
+	RadioGroup mRadioGroup;
 
 
 	/***************************************************
@@ -301,10 +307,8 @@ public class ActivityMain extends Activity {
 						mHandler.sendEmptyMessage(0);
 						mDialog.dismiss();
 					} catch (JSONException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
@@ -316,10 +320,59 @@ public class ActivityMain extends Activity {
 				}
 			});
 			break;
+		case Constants.DIALOG_NEW_PAGE:
+			//TODO
+			buildDialog.setTitle(getString(R.string.dialog_new_page_title));
+			mRadioGroup =  new RadioGroup(mContext);
+			RadioButton mBtnText = new RadioButton(mContext);
+			RadioButton mBtnImage = new RadioButton(mContext);
+			mBtnText.setText(R.string.radio_button_text);
+			mBtnImage.setText(R.string.radio_button_image);
+			mRadioGroup.addView(mBtnText);
+			mRadioGroup.addView(mBtnImage);
+			Constants.DEBUG_LOG(TAG, "Text View ID: " + mBtnText.getId());
+			Constants.DEBUG_LOG(TAG, "Image View ID: " + mBtnImage.getId());
+			mRadioGroup.setBackgroundColor(Color.BLACK);
+			mRadioGroup.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+				@Override
+				public void onCheckedChanged(RadioGroup group, int checkedId) {
+					createNewPage(setRadioButtons(group,checkedId));
+				}
+			});
+			break;
 		}
-		
+		buildDialog.setView(mRadioGroup);
 		mDialog = buildDialog.create();
 		return mDialog;
+	}
+	
+	/**
+	 * The onclick listener grabs the View ID of the checked button.
+	 * I check to see which index it is in the radio group.  
+	 * If it's index 0 then it's a text page
+	 * If it's index 1 then it's an image page
+	 * @param checkedID
+	 * @return
+	 */
+	public int setRadioButtons(RadioGroup group,int checkedID){
+		
+		int mIndex;
+		mIndex = group.indexOfChild(group.findViewById(checkedID));
+		
+		Constants.DEBUG_LOG(TAG, "mIndex = " + mIndex);
+		
+		mDialog.dismiss();
+		switch (mIndex){
+		case 0:
+			Constants.DEBUG_LOG(TAG, "Text Page created");
+			return Constants.PAGE_TYPE_TEXT;
+		case 1:
+			Constants.DEBUG_LOG(TAG, "Image Page created");
+			return Constants.PAGE_TYPE_IMAGE;
+		default:
+			Constants.DEBUG_LOG(TAG, "Default Page created " + mIndex);
+			return Constants.PAGE_TYPE_TEXT;
+		}
 	}
 
 	/**
@@ -358,6 +411,29 @@ public class ActivityMain extends Activity {
 			}
 		}
 	}
+	
+	public void sendEmail(){
+		Intent mEmail = new Intent(Intent.ACTION_SEND);
+		
+		mEmail.setType("message/rfc822");
+		mEmail.putExtra(Intent.EXTRA_EMAIL  , new String[]{"recipient@example.com"});
+		mEmail.putExtra(Intent.EXTRA_SUBJECT, "Subject");
+		mEmail.putExtra(Intent.EXTRA_TEXT   , "Body");
+		
+		saveStoryBook(Constants.CODE_SAVE);
+		
+		File mFileName = mService.getFileName();
+		
+		Uri mFileUri = Uri.parse("file://" + mFileName); // + ".json");
+		
+		mEmail.putExtra(Intent.EXTRA_STREAM, mFileUri);
+		
+		try {
+		    startActivity(Intent.createChooser(mEmail, "Email StoryBook"));
+		} catch (android.content.ActivityNotFoundException ex) {
+		    Toast.makeText(mContext, "There are no email clients installed.", Toast.LENGTH_SHORT).show();
+		}
+	}
 
 	/**
 	 * Load an image
@@ -393,6 +469,11 @@ public class ActivityMain extends Activity {
 		Dialog loadDialog = onAlertDialog(1);
 		loadDialog.show();
 	}
+	
+	public void createNewPage(){
+		Dialog mDialog = onAlertDialog(Constants.DIALOG_NEW_PAGE);
+		mDialog.show();
+	}
 
 	/**
 	 * Creates a new page.
@@ -409,6 +490,18 @@ public class ActivityMain extends Activity {
 			Constants.DEBUG_LOG(TAG, "Attempting to add page");
 			mService.addPage(mNewPage, mPosition);
 			Constants.DEBUG_LOG(TAG, "Page added at " + mPosition);
+			mHandler.sendEmptyMessage(0);
+		}
+	}
+	
+	/**
+	 * Deletes the current page if it's not the first page.
+	 */
+	public void deletePage(){
+		if(mPosition >= 2){
+			Constants.DEBUG_LOG(TAG, "Delete Page Hit");
+			mService.removePage(mPosition);
+			mPosition--;
 			mHandler.sendEmptyMessage(0);
 		}
 	}
@@ -607,7 +700,7 @@ public class ActivityMain extends Activity {
 		case android.R.id.home:
 			return true;
 		case R.id.menu_add_page:
-			createNewPage(Constants.PAGE_TYPE_TEXT);
+			createNewPage();
 			return true;
 		case R.id.menu_save:
 			saveStoryBook(Constants.CODE_SAVE);
@@ -619,12 +712,14 @@ public class ActivityMain extends Activity {
 			saveStoryBook(Constants.CODE_SAVE_AS);
 			return true;
 		case R.id.menu_delete_page:
+			deletePage();
 			return true;
 		case R.id.menu_new_project:
 			Intent mNewIntent = new Intent(mContext,StartActivity.class);
 			startActivity(mNewIntent);
 			return true;
 		case R.id.menu_email:
+			sendEmail();
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);

@@ -7,9 +7,11 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView.FindListener;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ViewFlipper;
 
 /**
@@ -100,7 +102,17 @@ public class ViewAdapter extends BaseAdapter {
 			
 			
 		case Constants.PAGE_TYPE_IMAGE: //Drawn page with drawn bitmap
-			//TODO: for drawn page
+			if(position % 2 == 0){
+				convertView = mInflater.inflate(R.layout.page_layout_image_even, null);
+			}else{ 
+				convertView = mInflater.inflate(R.layout.page_layout_image_odd, null);
+			}
+			ImageButton mImageView2 = (ImageButton) convertView.findViewById(R.id.image_main_view);
+			if(storybook.get(position).getBitmapPicture() != null)
+				mImageView2.setImageBitmap(storybook.get(position).getBitmapPicture());
+			ImageView storyImage = (ImageView) convertView.findViewById(R.id.image_main_view);
+			if(storybook.get(position).getBitmapText() != null)
+				storyImage.setImageBitmap(storybook.get(position).getBitmapText());
 			break;
 			
 			
@@ -128,8 +140,6 @@ public class ViewAdapter extends BaseAdapter {
 			}
 			break;
 		default:
-			
-			
 			convertView = mInflater.inflate(R.layout.layout_error, null);
 			break;
 		}
