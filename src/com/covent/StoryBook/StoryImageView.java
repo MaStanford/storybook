@@ -18,26 +18,23 @@ import android.view.View;
 
 public class StoryImageView extends View {
 
-	//Bitmap
-	private Path    mPath;
-	private Paint   mBitmapPaint;
-	private Paint   mGraphPaint;
+	// Bitmap
+	private Path mPath;
+	private Paint mBitmapPaint;
+	private Paint mGraphPaint;
 
-	//Paint
+	// Paint
 	private static Paint mPaint;
-	private static Bitmap  mBitmap;
-	private static Canvas  mCanvas;
+	private static Bitmap mBitmap;
+	private static Canvas mCanvas;
 	private static int mScreenHeight = 0;
 	private static int mScreenWidth = 0;
 	private static final float PAINT_WIDTH = 10;
 
-
-	//Touch 
+	// Touch
 	private float mX, mY;
 	private static final float TOUCH_TOLERANCE = 4;
 	private static final String TAG = "StoryImageView";
-
-
 
 	public StoryImageView(Context context) {
 		super(context);
@@ -94,18 +91,16 @@ public class StoryImageView extends View {
 		}
 	}
 
-
-
 	@Override
 	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
 		super.onSizeChanged(w, h, oldw, oldh);
 		mScreenHeight = h;
 		mScreenWidth = w;
-		mBitmap = Bitmap.createBitmap(mScreenWidth, mScreenHeight, Bitmap.Config.ARGB_8888);
+		mBitmap = Bitmap.createBitmap(mScreenWidth, mScreenHeight,Bitmap.Config.ARGB_8888);
 		mCanvas = new Canvas(mBitmap);
 		mCanvas.drawColor(Color.WHITE);
+		drawLines();
 	}
-
 
 	@Override
 	protected void onDraw(Canvas canvas) {
@@ -123,7 +118,7 @@ public class StoryImageView extends View {
 	}
 
 	@SuppressLint("WrongCall")
-	public void clearDrawing(){
+	public void clearDrawing() {
 		mBitmap.eraseColor(Color.WHITE);
 		mPath = null;
 		mPath = new Path();
@@ -134,18 +129,18 @@ public class StoryImageView extends View {
 		float dx = Math.abs(x - mX);
 		float dy = Math.abs(y - mY);
 		if (dx >= TOUCH_TOLERANCE || dy >= TOUCH_TOLERANCE) {
-			mPath.quadTo(mX, mY, (x + mX)/2, (y + mY)/2);
+			mPath.quadTo(mX, mY, (x + mX) / 2, (y + mY) / 2);
 			mX = x;
 			mY = y;
 		}
 	}
 
-	public void removeGraph(){
+	public void drawLines(){
 		float mHeight = mScreenHeight;
 		float mWidth = mScreenWidth;
-		float mHeightInc = mScreenHeight / 25;
-		float mWidthInc = mScreenWidth / 25;
-		mGraphPaint.setColor(Color.WHITE);
+		float mHeightInc = mScreenHeight / 15;
+		float mWidthInc = mScreenWidth / 15;
+		mGraphPaint.setColor(Color.GRAY);
 		while(mWidth > 0) {
 			mCanvas.drawLine(mWidth, 0, mWidth, mScreenHeight, mGraphPaint);
 			mWidth = mWidth - mWidthInc;
@@ -157,7 +152,7 @@ public class StoryImageView extends View {
 		this.invalidate();
 	}
 
-	public void loadCanvas(Bitmap mNewBitMap){
+	public void loadCanvas(Bitmap mNewBitMap) {
 		mCanvas.drawBitmap(mNewBitMap, 0, 0, mBitmapPaint);
 		this.invalidate();
 	}
@@ -168,7 +163,7 @@ public class StoryImageView extends View {
 		mCanvas.drawPath(mPath, mPaint);
 		// kill this so we don't double draw
 		mPath.reset();
-		//Create the intent to send to save changes
+		// Create the intent to send to save changes
 		Intent mIntent = new Intent(Constants.KEY_IMAGE_DRAW_INTENT);
 		getContext().sendBroadcast(mIntent);
 	}
@@ -197,12 +192,13 @@ public class StoryImageView extends View {
 
 	public void setBitmap(Bitmap bitmapText) {
 		mBitmap = bitmapText;
-		Constants.DEBUG_LOG(TAG, "SetBitmap called. Is Canvas Null? " + mCanvas);
-		if(mCanvas != null)
+		Constants
+		.DEBUG_LOG(TAG, "SetBitmap called. Is Canvas Null? " + mCanvas);
+		if (mCanvas != null)
 			loadCanvas(bitmapText);
 	}
-	
-	public Bitmap getBitmap(){
+
+	public Bitmap getBitmap() {
 		return mBitmap;
 	}
 }
